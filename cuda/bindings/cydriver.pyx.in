@@ -5,7 +5,7 @@
 # this software. Any use, reproduction, disclosure, or distribution of
 # this software and related documentation outside the terms of the EULA
 # is strictly prohibited.
-cimport cuda._cuda.ccuda as ccuda
+cimport cuda.bindings._cuda.ccuda as ccuda
 
 {{if 'cuGetErrorString' in found_functions}}
 

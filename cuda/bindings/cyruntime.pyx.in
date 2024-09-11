@@ -8,9 +8,9 @@
 
 # cython: show_performance_hints=False
 
-cimport cuda._cuda.ccuda as ccuda
-from cuda._lib.ccudart.ccudart cimport *
-from cuda._lib.ccudart.utils cimport *
+cimport cuda.bindings._cuda.ccuda as ccuda
+from cuda.bindings._lib.ccudart.ccudart cimport *
+from cuda.bindings._lib.ccudart.utils cimport *
 from libc.stdlib cimport malloc, free, calloc
 from libc cimport string
 from libcpp cimport bool

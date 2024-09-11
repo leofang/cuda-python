@@ -5,8 +5,8 @@
 # this software. Any use, reproduction, disclosure, or distribution of
 # this software and related documentation outside the terms of the EULA
 # is strictly prohibited.
-cimport cuda.ccuda as ccuda
-cimport cuda._lib.utils as utils
+cimport cuda.bindings.cydriver as ccuda
+cimport cuda.bindings._lib.utils as utils
 
 {{if 'CUcontext' in found_types}}
 
