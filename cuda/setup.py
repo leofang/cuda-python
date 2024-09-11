@@ -136,9 +136,10 @@ def generate_output(infile, local):
         f.write(pxdcontent)
 
 path_list = [os.path.join('cuda'),
-             os.path.join('cuda', '_cuda'),
-             os.path.join('cuda', '_lib'),
-             os.path.join('cuda', '_lib', 'ccudart')]
+             os.path.join('cuda', 'bindings'),
+             os.path.join('cuda', 'bindings', '_cuda'),
+             os.path.join('cuda', 'bindings', '_lib'),
+             os.path.join('cuda', 'bindings', '_lib', 'ccudart')]
 input_files = []
 for path in path_list:
     input_files += fetch_input_files(path)
@@ -204,14 +205,18 @@ def do_cythonize(sources):
 
 sources_list = [
     # private
-    ["cuda/_cuda/*.pyx", "cuda/_cuda/loader.cpp"],
+    ["cuda/bindings/_cuda/*.pyx", "cuda/bindings/_cuda/loader.cpp"],
     # utils
-    ["cuda/_lib/*.pyx", "cuda/_lib/param_packer.cpp"],
-    ["cuda/_lib/ccudart/*.pyx"],
+    ["cuda/bindings/_lib/*.pyx", "cuda/bindings/_lib/param_packer.cpp"],
+    ["cuda/bindings/_lib/ccudart/*.pyx"],
     # public
+    ["cuda/bindings/*.pyx"],
+    # public (deprecated, to be removed)
     ["cuda/*.pyx"],
-    # tests
-    ["cuda/tests/*.pyx"]]
+    # FIXME
+    # # tests
+    # ["cuda/tests/*.pyx"],
+]
 
 for sources in sources_list:
     extensions += do_cythonize(sources)
