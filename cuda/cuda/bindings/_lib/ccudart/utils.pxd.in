@@ -5,12 +5,12 @@
 # this software. Any use, reproduction, disclosure, or distribution of
 # this software and related documentation outside the terms of the EULA
 # is strictly prohibited.
-from cuda.ccudart cimport *
+from cuda.bindings.cyruntime cimport *
 from libc.stdlib cimport malloc, free, calloc
 from libc.string cimport memset, memcpy, strncmp
 from libcpp cimport bool
 from libcpp.map cimport map
-cimport cuda._cuda.ccuda as ccuda
+cimport cuda.bindings._cuda.ccuda as ccuda
 
 ctypedef struct cudaAsyncCallbackData_st:
     cudaAsyncCallback callback

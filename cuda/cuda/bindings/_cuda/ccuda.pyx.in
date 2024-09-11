@@ -10,11 +10,11 @@ import win32api
 import struct
 from pywintypes import error
 {{else}}
-cimport cuda._lib.dlfcn as dlfcn
+cimport cuda.bindings._lib.dlfcn as dlfcn
 {{endif}}
 import os
 import sys
-cimport cuda._cuda.loader as loader
+cimport cuda.bindings._cuda.loader as loader
 cdef bint __cuPythonInit = False
 {{if 'cuGetErrorString' in found_functions}}cdef void *__cuGetErrorString = NULL{{endif}}
 {{if 'cuGetErrorName' in found_functions}}cdef void *__cuGetErrorName = NULL{{endif}}

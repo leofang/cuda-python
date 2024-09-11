@@ -5,8 +5,8 @@
 # this software. Any use, reproduction, disclosure, or distribution of
 # this software and related documentation outside the terms of the EULA
 # is strictly prohibited.
-cimport cuda.cuda as cuda
-cimport cuda.ccuda as ccuda
+cimport cuda.bindings.driver as cuda
+cimport cuda.bindings.cydriver as ccuda
 from libcpp.vector cimport vector
 
 cdef class HelperKernelParams:

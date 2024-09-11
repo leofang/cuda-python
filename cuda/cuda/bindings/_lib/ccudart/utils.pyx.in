@@ -6,11 +6,11 @@
 # this software and related documentation outside the terms of the EULA
 # is strictly prohibited.
 import cython
-from cuda.ccudart cimport *
+from cuda.bindings.cyruntime cimport *
 from libc.stdlib cimport malloc, free, calloc
 from libc.string cimport memset, memcpy, strncmp, memcmp
 from libcpp cimport bool
-cimport cuda._cuda.ccuda as ccuda
+cimport cuda.bindings._cuda.ccuda as ccuda
 
 cdef struct cudaArrayLocalState:
     ccuda.CUarray array

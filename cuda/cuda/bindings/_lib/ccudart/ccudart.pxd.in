@@ -5,8 +5,8 @@
 # this software. Any use, reproduction, disclosure, or distribution of
 # this software and related documentation outside the terms of the EULA
 # is strictly prohibited.
-cimport cuda.ccuda as ccuda
-from cuda.ccudart cimport *
+cimport cuda.bindings.cydriver as ccuda
+from cuda.bindings.cyruntime cimport *
 from libc.stdlib cimport malloc, free, calloc
 from libc.string cimport memset, memcpy, strncmp
 from libcpp cimport bool

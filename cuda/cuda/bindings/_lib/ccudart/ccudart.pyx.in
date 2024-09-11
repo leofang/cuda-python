@@ -5,12 +5,12 @@
 # this software. Any use, reproduction, disclosure, or distribution of
 # this software and related documentation outside the terms of the EULA
 # is strictly prohibited.
-from cuda.ccudart cimport *
-from cuda._lib.ccudart.utils cimport *
+from cuda.bindings.cyruntime cimport *
+from cuda.bindings._lib.ccudart.utils cimport *
 from libc.stdlib cimport malloc, free, calloc
 from libc.string cimport memset, memcpy, strncmp
 from libcpp cimport bool
-cimport cuda._cuda.ccuda as ccuda
+cimport cuda.bindings._cuda.ccuda as ccuda
 
 cdef cudaPythonGlobal m_global = globalGetInstance()
 
@@ -4867,7 +4867,7 @@ cdef cudaError_t _cudaGraphAddNode_v2(cudaGraphNode_t* pGraphNode, cudaGraph_t g
 {{if True}}
 
 {{if 'Windows' != platform.system()}}
-cimport cuda._lib.dlfcn as dlfcn
+cimport cuda.bindings._lib.dlfcn as dlfcn
 {{endif}}
 
 cdef cudaError_t _getLocalRuntimeVersion(int* runtimeVersion) except ?cudaErrorCallRequiresNewerDriver nogil:

@@ -10,7 +10,7 @@ import win32api
 import struct
 from pywintypes import error
 {{else}}
-cimport cuda._lib.dlfcn as dlfcn
+cimport cuda.bindings._lib.dlfcn as dlfcn
 {{endif}}
 
 cdef bint __cuPythonInit = False
