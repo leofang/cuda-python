@@ -213,9 +213,8 @@ sources_list = [
     ["cuda/bindings/*.pyx"],
     # public (deprecated, to be removed)
     ["cuda/*.pyx"],
-    # FIXME
-    # # tests
-    # ["cuda/tests/*.pyx"],
+    # tests
+    ["cuda/bindings/tests/*.pyx"],
 ]
 
 for sources in sources_list:
@@ -246,9 +245,9 @@ cmdclass = versioneer.get_cmdclass(cmdclass)
 setup(
     version=versioneer.get_version(),
     ext_modules=extensions,
-    packages=find_packages(include=["cuda", "cuda.*"]),
+    packages=find_packages(include=["cuda.*"]),
     package_data=dict.fromkeys(
-        find_packages(include=["cuda", "cuda.*"]),
+        find_packages(include=["cuda.*"]),
         ["*.pxd", "*.pyx", "*.h", "*.cpp"],
     ),
     cmdclass=cmdclass,

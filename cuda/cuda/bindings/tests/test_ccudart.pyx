@@ -9,6 +9,8 @@ from libc.string cimport (
     memset,
     memcmp
     )
+# TODO: update to new module once the old ones are removed, we use the
+# tests to cover backward compatibility.
 cimport cuda.ccudart as ccudart
 
 def test_ccudart_memcpy():

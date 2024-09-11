@@ -5,6 +5,9 @@
 # this software. Any use, reproduction, disclosure, or distribution of
 # this software and related documentation outside the terms of the EULA
 # is strictly prohibited.
+
+# TODO: update to new module once the old ones are removed, we use the
+# tests to cover backward compatibility.
 import pytest
 import cuda.cuda as cuda
 import cuda.cudart as cudart

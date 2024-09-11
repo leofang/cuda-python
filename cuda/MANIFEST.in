@@ -1,1 +1,1 @@
-include cuda/_version.py
+recursive-include cuda/ *.pyx *.pxd

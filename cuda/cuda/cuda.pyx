@@ -1,6 +1,6 @@
-from cuda.bindings.driver import *
+import warnings as _warnings
 
-import warnings
+from cuda.bindings.driver import *
 
 
 cdef extern from *:
@@ -10,5 +10,5 @@ cdef extern from *:
     """
 
 
-warnings.warn("The cuda.cuda module is deprecated and will be removed in a future release, "
-              "please switch to use the cuda.bindings.driver module instead.", DeprecationWarning, stacklevel=2)
+_warnings.warn("The cuda.cuda module is deprecated and will be removed in a future release, "
+               "please switch to use the cuda.bindings.driver module instead.", DeprecationWarning, stacklevel=2)
