@@ -6,17 +6,20 @@
 # this software and related documentation outside the terms of the EULA
 # is strictly prohibited.
 
-from Cython import Tempita
-from Cython.Build import cythonize
+import glob
 import os
 import platform
-from pyclibrary import CParser
 import sys
 import sysconfig
+
+from Cython import Tempita
+from Cython.Build import cythonize
+from pyclibrary import CParser
 from setuptools import find_packages, setup
 from setuptools.extension import Extension
 from setuptools.command.build_ext import build_ext
 import versioneer
+
 
 # ----------------------------------------------------------------------
 # Fetch configuration options
@@ -116,6 +119,7 @@ unwrapMembers(found_unions)
 
 # ----------------------------------------------------------------------
 # Generate
+
 def fetch_input_files(path):
     return [os.path.join(path, f) for f in os.listdir(path) if f.endswith('.in')]
 
@@ -183,25 +187,36 @@ cmdclass = {}
 # ----------------------------------------------------------------------
 # Cythonize
 
-def do_cythonize(sources):
+def prep_extensions(sources):
+    pattern = sources[0]
+    files = glob.glob(pattern)
+    exts = []
+    for pyx in files:
+        mod_name = pyx.replace(".pyx", "").replace(os.sep, ".")
+        exts.append(
+            Extension(
+                mod_name,
+                sources=[pyx, *sources[1:]],
+                include_dirs=include_dirs,
+                library_dirs=library_dirs,
+                runtime_library_dirs=[],
+                libraries=[],
+                language="c++",
+                extra_compile_args=extra_compile_args,
+            )
+        )
+    return exts
+
+
+def do_cythonize(extensions):
     return cythonize(
-                    [
-                        Extension(
-                            "*",
-                            sources=sources,
-                            include_dirs=include_dirs,
-                            library_dirs=library_dirs,
-                            runtime_library_dirs=[],
-                            libraries=[],
-                            language="c++",
-                            extra_compile_args=extra_compile_args,
-                        )
-                    ],
-                    nthreads=nthreads,
-                    compiler_directives=dict(
-                        profile=True, language_level=3, embedsignature=True, binding=True
-                    ),
-                    **extra_cythonize_kwargs)
+        extensions,
+        nthreads=nthreads,
+        compiler_directives=dict(
+            profile=True, language_level=3, embedsignature=True, binding=True
+        ),
+        **extra_cythonize_kwargs)
+
 
 sources_list = [
     # private
@@ -218,7 +233,7 @@ sources_list = [
 ]
 
 for sources in sources_list:
-    extensions += do_cythonize(sources)
+    extensions += prep_extensions(sources)
 
 # ---------------------------------------------------------------------
 # Custom build_ext command
@@ -244,11 +259,11 @@ cmdclass = versioneer.get_cmdclass(cmdclass)
 
 setup(
     version=versioneer.get_version(),
-    ext_modules=extensions,
-    packages=find_packages(include=["cuda.*"]),
+    ext_modules=do_cythonize(extensions),
+    packages=find_packages(include=["cuda", "cuda.*"]),
     package_data=dict.fromkeys(
         find_packages(include=["cuda.*"]),
-        ["*.pxd", "*.pyx", "*.h", "*.cpp"],
+        ["*.pxd", "*.pyx", "*.py", "*.h", "*.cpp"],
     ),
     cmdclass=cmdclass,
     zip_safe=False,

@@ -1,1 +1,2 @@
 recursive-include cuda/ *.pyx *.pxd
+exclude cuda/bindings
