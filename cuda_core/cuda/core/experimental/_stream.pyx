@@ -318,10 +318,10 @@ cdef class Stream:
 
     cdef _get_device_and_context(self):
         # Get the stream context first
-        if self._ctx_handle is None:
-            err, self._ctx_handle = driver.cuStreamGetCtx(self._handle)
-            raise_if_driver_error(err)
         if self._device_id is None:
+            if self._ctx_handle is None:
+                err, self._ctx_handle = driver.cuStreamGetCtx(self._handle)
+                raise_if_driver_error(err)
             self._device_id = get_device_from_ctx(self._ctx_handle)
             raise_if_driver_error(err)
 
