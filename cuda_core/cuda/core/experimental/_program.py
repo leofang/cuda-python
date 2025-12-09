@@ -182,6 +182,9 @@ def transform_options_for_backend(formatted_options: list[str], backend: str) ->
             elif option == "-dopt=on":
                 # Map -dopt=on to -opt=3 (dashes already transformed above)
                 option = "-opt=3"
+            elif option == "-dopt=off":
+                # Map -dopt=off to -opt=0
+                option = "-opt=0"
 
         elif backend == "nvjitlink":
             # nvJitLink transformations
