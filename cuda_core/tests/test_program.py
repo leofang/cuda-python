@@ -6,9 +6,9 @@ import re
 import warnings
 
 import pytest
-from cuda.core.experimental import _linker
+from cuda.core.experimental import LinkerOptions, _linker
 from cuda.core.experimental._module import Kernel, ObjectCode
-from cuda.core.experimental._program import Program, ProgramOptions
+from cuda.core.experimental._program import Program, ProgramOptions, transform_options_for_backend
 from cuda.core.experimental._utils.cuda_utils import CUDAError, driver, handle_return
 
 cuda_driver_version = handle_return(driver.cuDriverGetVersion())
@@ -522,8 +522,6 @@ def test_program_options_as_bytes_invalid_backend():
 
 def test_transform_options_for_backend_function():
     """Test the standalone transform_options_for_backend function."""
-    from cuda.core.experimental._program import transform_options_for_backend
-
     # Test NVRTC (no transformation)
     nvrtc_opts = ["--ftz=true", "--device-debug"]
     assert transform_options_for_backend(nvrtc_opts, "nvrtc") == nvrtc_opts
@@ -545,8 +543,6 @@ def test_transform_options_for_backend_function():
 
 def test_linker_options_as_bytes():
     """Test LinkerOptions.as_bytes() method."""
-    from cuda.core.experimental import LinkerOptions
-
     options = LinkerOptions(arch="sm_80", debug=True)
     byte_options = options.as_bytes()
 

@@ -180,7 +180,7 @@ def transform_options_for_backend(formatted_options: list[str], backend: str) ->
             if option == "-device-debug":
                 option = "-g"
             elif option == "-dopt=on":
-                # Map --dopt=on to -opt=3
+                # Map -dopt=on to -opt=3 (dashes already transformed above)
                 option = "-opt=3"
 
         elif backend == "nvjitlink":
