@@ -411,3 +411,37 @@ def test_nvvm_program_options(init_cuda, nvvm_ir, options):
     assert ".visible .entry simple(" in ptx_text
 
     program.close()
+
+
+def test_program_options_as_bytes():
+    """Test that ProgramOptions.as_bytes() returns properly encoded bytes."""
+    # Test with basic options
+    options = ProgramOptions(name="test", arch="sm_80")
+    result = options.as_bytes()
+    
+    # Should return a list
+    assert isinstance(result, list)
+    
+    # All items should be bytes
+    assert all(isinstance(item, bytes) for item in result)
+    
+    # Should contain at least the arch option
+    assert any(b"-arch=sm_80" == item for item in result)
+    
+    # Test with multiple options
+    options = ProgramOptions(
+        name="test_multi",
+        arch="sm_90",
+        debug=True,
+        lineinfo=True,
+        max_register_count=32
+    )
+    result = options.as_bytes()
+    
+    # Should contain multiple options
+    assert len(result) >= 3  # At minimum arch, debug, lineinfo, and maxrregcount
+    assert any(b"-arch=sm_90" == item for item in result)
+    assert any(b"--device-debug" == item for item in result)
+    assert any(b"--generate-line-info" == item for item in result)
+    assert any(b"--maxrregcount=32" == item for item in result)
+

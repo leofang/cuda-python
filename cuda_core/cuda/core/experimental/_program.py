@@ -422,7 +422,15 @@ class ProgramOptions:
         if self.numba_debug:
             self._formatted_options.append("--numba-debug")
 
-    def _as_bytes(self):
+    def as_bytes(self) -> list[bytes]:
+        """Convert the program options to a list of byte-encoded strings.
+
+        Returns
+        -------
+        list[bytes]
+            A list of byte-encoded option strings suitable for passing to the
+            underlying compilation APIs.
+        """
         # TODO: allow tuples once NVIDIA/cuda-python#72 is resolved
         return list(o.encode() for o in self._formatted_options)
 
@@ -609,7 +617,7 @@ class Program:
                         nvrtc.nvrtcAddNameExpression(self._mnff.handle, n.encode()),
                         handle=self._mnff.handle,
                     )
-            options = self._options._as_bytes()
+            options = self._options.as_bytes()
             handle_return(
                 nvrtc.nvrtcCompileProgram(self._mnff.handle, len(options), options),
                 handle=self._mnff.handle,
