@@ -179,7 +179,7 @@ def transform_options_for_backend(formatted_options: list[str], backend: str) ->
             # Map specific NVRTC options to NVVM equivalents
             if option == "-device-debug":
                 option = "-g"
-            elif option.startswith("-dopt=") and option == "-dopt=on":
+            elif option == "-dopt=on":
                 # Map --dopt=on to -opt=3
                 option = "-opt=3"
                 # Note: device_code_optimize=False maps to -opt=0, handled elsewhere
@@ -200,7 +200,7 @@ def transform_options_for_backend(formatted_options: list[str], backend: str) ->
                 # nvJitLink uses -maxrregcount
                 pass  # Already correct format
             elif option.startswith("-ptxas-options="):
-                # Transform --ptxas-options=value to -Xptxas=value
+                # Transform -ptxas-options=value to -Xptxas=value
                 value = option.split("=", 1)[1]
                 option = f"-Xptxas={value}"
             elif option.startswith("-fmad="):

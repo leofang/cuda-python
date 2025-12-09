@@ -328,7 +328,7 @@ class LinkerOptions:
             self.formatted_options.append(_driver.CUjit_cacheMode.CU_JIT_CACHE_OPTION_NONE)
             self.option_keys.append(_driver.CUjit_option.CU_JIT_CACHE_MODE)
 
-    def as_bytes(self) -> list[bytes]:
+    def as_bytes(self) -> list:
         """Convert options to a list of byte strings suitable for the linker backend.
 
         The LinkerOptions class automatically formats options for the appropriate backend
@@ -337,8 +337,10 @@ class LinkerOptions:
 
         Returns
         -------
-        list[bytes]
-            List of options encoded as byte strings, formatted for the current backend.
+        list
+            List of options formatted for the current backend. For nvJitLink backend,
+            all elements are bytes. For driver backend, elements may be bytes, bytearrays,
+            ints, or enum values depending on the option type.
 
         Notes
         -----
