@@ -439,7 +439,7 @@ def test_program_options_as_bytes():
     result = options.as_bytes()
     
     # Should contain multiple options
-    assert len(result) >= 3  # At minimum arch, debug, lineinfo, and maxrregcount
+    assert len(result) >= 3  # At minimum arch, debug, lineinfo, and maxregcount
     assert any(b"-arch=sm_90" == item for item in result)
     assert any(b"--device-debug" == item for item in result)
     assert any(b"--generate-line-info" == item for item in result)
