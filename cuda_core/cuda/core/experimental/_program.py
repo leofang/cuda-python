@@ -182,7 +182,6 @@ def transform_options_for_backend(formatted_options: list[str], backend: str) ->
             elif option == "-dopt=on":
                 # Map --dopt=on to -opt=3
                 option = "-opt=3"
-                # Note: device_code_optimize=False maps to -opt=0, handled elsewhere
 
         elif backend == "nvjitlink":
             # nvJitLink transformations
@@ -201,6 +200,7 @@ def transform_options_for_backend(formatted_options: list[str], backend: str) ->
                 pass  # Already correct format
             elif option.startswith("-ptxas-options="):
                 # Transform -ptxas-options=value to -Xptxas=value
+                # Note: ptxas options are already split into individual options by ProgramOptions
                 value = option.split("=", 1)[1]
                 option = f"-Xptxas={value}"
             elif option.startswith("-fmad="):

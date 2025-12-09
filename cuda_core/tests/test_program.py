@@ -468,7 +468,7 @@ def test_program_options_as_bytes_nvvm():
     assert "-ftz=1" in decoded_options  # true -> 1
     assert "-prec-sqrt=0" in decoded_options  # false -> 0
     assert "-prec-div=0" in decoded_options  # false -> 0
-    assert "-fma=1" in decoded_options  # true -> 1 (and fmad -> fma)
+    assert "-fma=1" in decoded_options  # true -> 1
 
 
 def test_program_options_as_bytes_nvjitlink():
