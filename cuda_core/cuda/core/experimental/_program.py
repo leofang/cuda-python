@@ -171,10 +171,10 @@ def transform_options_for_backend(formatted_options: list[str], backend: str) ->
 
             # Transform boolean values "true"/"false" to "1"/"0"
             for bool_opt in ["ftz", "prec-sqrt", "prec-div", "fma", "fmad"]:
-                if f"-{bool_opt}=true" in option:
-                    option = option.replace(f"-{bool_opt}=true", f"-{bool_opt}=1")
-                elif f"-{bool_opt}=false" in option:
-                    option = option.replace(f"-{bool_opt}=false", f"-{bool_opt}=0")
+                if option == f"-{bool_opt}=true":
+                    option = f"-{bool_opt}=1"
+                elif option == f"-{bool_opt}=false":
+                    option = f"-{bool_opt}=0"
 
             # Map specific NVRTC options to NVVM equivalents
             if option == "-device-debug":
@@ -199,8 +199,8 @@ def transform_options_for_backend(formatted_options: list[str], backend: str) ->
                 # nvJitLink uses -maxrregcount
                 pass  # Already correct format
             elif option.startswith("-ptxas-options="):
-                # Transform -ptxas-options=value to -Xptxas=value
-                # Note: ptxas options are already split into individual options by ProgramOptions
+                # Transform each -ptxas-options=value to -Xptxas=value
+                # (ProgramOptions creates one entry per option when given a sequence)
                 value = option.split("=", 1)[1]
                 option = f"-Xptxas={value}"
             elif option.startswith("-fmad="):
