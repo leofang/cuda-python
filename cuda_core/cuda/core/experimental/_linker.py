@@ -328,6 +328,33 @@ class LinkerOptions:
             self.formatted_options.append(_driver.CUjit_cacheMode.CU_JIT_CACHE_OPTION_NONE)
             self.option_keys.append(_driver.CUjit_option.CU_JIT_CACHE_MODE)
 
+    def as_bytes(self) -> list[bytes]:
+        """Convert options to a list of byte strings suitable for the linker backend.
+        
+        The LinkerOptions class automatically formats options for the appropriate backend
+        (nvJitLink or driver) during initialization. This method simply encodes the
+        already-formatted options as byte strings.
+        
+        Returns
+        -------
+        list[bytes]
+            List of options encoded as byte strings, formatted for the current backend.
+        
+        Notes
+        -----
+        Unlike ProgramOptions, LinkerOptions does not require a backend parameter because
+        the backend is determined at initialization time based on system availability.
+        
+        Examples
+        --------
+        >>> options = LinkerOptions(arch="sm_90", debug=True)
+        >>> byte_opts = options.as_bytes()  # [b'-arch=sm_90', b'-g', ...]
+        """
+        # For nvJitLink, formatted_options contains strings
+        # For driver, formatted_options contains a mix of types (bytearrays, ints, enums)
+        # We only encode string options
+        return [o.encode() if isinstance(o, str) else o for o in self.formatted_options]
+
 
 # This needs to be a free function not a method, as it's disallowed by contextmanager.
 @contextmanager

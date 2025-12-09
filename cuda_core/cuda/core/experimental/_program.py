@@ -126,6 +126,96 @@ def _process_define_macro(formatted_options, macro):
     raise RuntimeError(f"Expected define_macro {union_type}, list[{union_type}], got {macro}")
 
 
+def transform_options_for_backend(formatted_options: list[str], backend: str) -> list[str]:
+    """Transform formatted options to match the specified backend's expected format.
+    
+    Different compiler backends (NVRTC, NVVM, nvJitLink) have slightly different
+    option naming conventions. This function transforms a list of options formatted
+    for NVRTC (the default) to the format expected by other backends.
+    
+    Parameters
+    ----------
+    formatted_options : list[str]
+        Options formatted in NVRTC style (e.g., "--option=value").
+    backend : str
+        Target backend: "nvrtc", "nvvm", or "nvjitlink".
+    
+    Returns
+    -------
+    list[str]
+        Options transformed for the specified backend.
+    
+    Notes
+    -----
+    - NVRTC uses double-dash options (e.g., "--ftz=true")
+    - NVVM uses single-dash options and "0"/"1" for booleans (e.g., "-ftz=1")
+    - nvJitLink uses single-dash options and "true"/"false" for booleans (e.g., "-ftz=true")
+    """
+    backend = backend.lower()
+    
+    if backend == "nvrtc":
+        # No transformation needed, already in NVRTC format
+        return formatted_options
+    
+    transformed = []
+    for option in formatted_options:
+        if backend == "nvvm":
+            # NVVM transformations
+            # Transform "--option" to "-option"
+            if option.startswith("--"):
+                option = option[1:]  # Remove one dash
+            
+            # Transform architecture: sm_XX -> compute_XX
+            if option.startswith("-arch=sm_"):
+                option = option.replace("-arch=sm_", "-arch=compute_")
+            
+            # Transform boolean values "true"/"false" to "1"/"0"
+            for bool_opt in ["ftz", "prec-sqrt", "prec-div", "fma", "fmad"]:
+                if f"-{bool_opt}=true" in option:
+                    option = option.replace(f"-{bool_opt}=true", f"-{bool_opt}=1")
+                elif f"-{bool_opt}=false" in option:
+                    option = option.replace(f"-{bool_opt}=false", f"-{bool_opt}=0")
+            
+            # Map specific NVRTC options to NVVM equivalents
+            if option == "-device-debug":
+                option = "-g"
+            elif option.startswith("-dopt="):
+                # Map --dopt=on to -opt=3, leave others as is
+                if option == "-dopt=on":
+                    option = "-opt=3"
+                # Note: device_code_optimize=False maps to -opt=0, handled elsewhere
+        
+        elif backend == "nvjitlink":
+            # nvJitLink transformations
+            # Transform "--option" to "-option"
+            if option.startswith("--"):
+                option = option[1:]
+            
+            # nvJitLink uses "true"/"false" for booleans, so no boolean transformation needed
+            # Map specific NVRTC option names to nvJitLink equivalents
+            if option == "-device-debug":
+                option = "-g"
+            elif option == "-generate-line-info":
+                option = "-lineinfo"
+            elif option.startswith("-maxrregcount="):
+                # nvJitLink uses -maxrregcount
+                pass  # Already correct format
+            elif option.startswith("-ptxas-options="):
+                # Transform --ptxas-options=value to -Xptxas=value
+                value = option.split("=", 1)[1]
+                option = f"-Xptxas={value}"
+            elif option.startswith("-fmad="):
+                # nvJitLink uses -fma instead of -fmad
+                option = option.replace("-fmad=", "-fma=")
+        
+        else:
+            raise ValueError(f"Unsupported backend: {backend}. Must be one of: nvrtc, nvvm, nvjitlink")
+        
+        transformed.append(option)
+    
+    return transformed
+
+
 @dataclass
 class ProgramOptions:
     """Customizable options for configuring `Program`.
@@ -422,9 +512,49 @@ class ProgramOptions:
         if self.numba_debug:
             self._formatted_options.append("--numba-debug")
 
-    def _as_bytes(self):
+    def as_bytes(self, backend: str = "nvrtc") -> list[bytes]:
+        """Convert options to a list of byte strings suitable for the specified backend.
+        
+        Different compiler backends (NVRTC, NVVM, nvJitLink) have slightly different
+        option naming conventions. This method transforms the internal options to match
+        the format expected by the specified backend.
+        
+        Parameters
+        ----------
+        backend : str, optional
+            Target backend for option formatting. Must be one of: "nvrtc" (default),
+            "nvvm", or "nvjitlink".
+        
+        Returns
+        -------
+        list[bytes]
+            List of options encoded as byte strings, formatted for the specified backend.
+        
+        Raises
+        ------
+        ValueError
+            If an unsupported backend is specified.
+        
+        Notes
+        -----
+        - NVRTC uses double-dash options (e.g., ``--ftz=true``)
+        - NVVM uses single-dash options and ``0``/``1`` for booleans (e.g., ``-ftz=1``)
+        - nvJitLink uses single-dash options and ``true``/``false`` for booleans (e.g., ``-ftz=true``)
+        
+        Examples
+        --------
+        >>> options = ProgramOptions(ftz=True, debug=True)
+        >>> nvrtc_opts = options.as_bytes("nvrtc")  # ['--ftz=true', '--device-debug', ...]
+        >>> nvvm_opts = options.as_bytes("nvvm")    # ['-ftz=1', '-g', ...]
+        """
+        transformed_options = transform_options_for_backend(self._formatted_options, backend)
         # TODO: allow tuples once NVIDIA/cuda-python#72 is resolved
-        return list(o.encode() for o in self._formatted_options)
+        return list(o.encode() for o in transformed_options)
+    
+    def _as_bytes(self):
+        """Deprecated: Use as_bytes() instead."""
+        # Keep for backward compatibility during transition
+        return self.as_bytes("nvrtc")
 
     def __repr__(self):
         # __TODO__ improve this
