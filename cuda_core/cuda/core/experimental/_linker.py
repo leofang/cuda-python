@@ -330,21 +330,21 @@ class LinkerOptions:
 
     def as_bytes(self) -> list[bytes]:
         """Convert options to a list of byte strings suitable for the linker backend.
-        
+
         The LinkerOptions class automatically formats options for the appropriate backend
         (nvJitLink or driver) during initialization. This method simply encodes the
         already-formatted options as byte strings.
-        
+
         Returns
         -------
         list[bytes]
             List of options encoded as byte strings, formatted for the current backend.
-        
+
         Notes
         -----
         Unlike ProgramOptions, LinkerOptions does not require a backend parameter because
         the backend is determined at initialization time based on system availability.
-        
+
         Examples
         --------
         >>> options = LinkerOptions(arch="sm_90", debug=True)

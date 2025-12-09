@@ -424,15 +424,15 @@ def test_program_options_as_bytes_nvrtc():
         fma=True,
         max_register_count=32,
     )
-    
+
     nvrtc_options = options.as_bytes("nvrtc")
-    
+
     # All options should be bytes
     assert all(isinstance(opt, bytes) for opt in nvrtc_options)
-    
+
     # Decode to check content
     decoded_options = [opt.decode() for opt in nvrtc_options]
-    
+
     # Check NVRTC-specific formatting
     assert "-arch=sm_80" in decoded_options
     assert "--device-debug" in decoded_options
@@ -453,15 +453,15 @@ def test_program_options_as_bytes_nvvm():
         prec_div=False,
         fma=True,
     )
-    
+
     nvvm_options = options.as_bytes("nvvm")
-    
+
     # All options should be bytes
     assert all(isinstance(opt, bytes) for opt in nvvm_options)
-    
+
     # Decode to check content
     decoded_options = [opt.decode() for opt in nvvm_options]
-    
+
     # Check NVVM-specific formatting
     assert "-arch=compute_80" in decoded_options  # sm_ transformed to compute_
     assert "-g" in decoded_options  # --device-debug -> -g
@@ -482,15 +482,15 @@ def test_program_options_as_bytes_nvjitlink():
         max_register_count=32,
         ptxas_options=["-v", "-O2"],
     )
-    
+
     nvjitlink_options = options.as_bytes("nvjitlink")
-    
+
     # All options should be bytes
     assert all(isinstance(opt, bytes) for opt in nvjitlink_options)
-    
+
     # Decode to check content
     decoded_options = [opt.decode() for opt in nvjitlink_options]
-    
+
     # Check nvJitLink-specific formatting
     assert "-arch=sm_80" in decoded_options
     assert "-g" in decoded_options  # --device-debug -> -g
@@ -505,17 +505,17 @@ def test_program_options_as_bytes_nvjitlink():
 def test_program_options_as_bytes_default():
     """Test that as_bytes() defaults to NVRTC."""
     options = ProgramOptions(arch="sm_80", debug=True)
-    
+
     default_options = options.as_bytes()
     nvrtc_options = options.as_bytes("nvrtc")
-    
+
     assert default_options == nvrtc_options
 
 
 def test_program_options_as_bytes_invalid_backend():
     """Test that as_bytes() raises error for invalid backend."""
     options = ProgramOptions(arch="sm_80")
-    
+
     with pytest.raises(ValueError, match="Unsupported backend"):
         options.as_bytes("invalid_backend")
 
@@ -523,21 +523,21 @@ def test_program_options_as_bytes_invalid_backend():
 def test_transform_options_for_backend_function():
     """Test the standalone transform_options_for_backend function."""
     from cuda.core.experimental._program import transform_options_for_backend
-    
+
     # Test NVRTC (no transformation)
     nvrtc_opts = ["--ftz=true", "--device-debug"]
     assert transform_options_for_backend(nvrtc_opts, "nvrtc") == nvrtc_opts
-    
+
     # Test NVVM transformations
     nvvm_opts = transform_options_for_backend(nvrtc_opts, "nvvm")
     assert "-ftz=1" in nvvm_opts
     assert "-g" in nvvm_opts
-    
+
     # Test nvJitLink transformations
     nvjitlink_opts = transform_options_for_backend(nvrtc_opts, "nvjitlink")
     assert "-ftz=true" in nvjitlink_opts
     assert "-g" in nvjitlink_opts
-    
+
     # Test invalid backend
     with pytest.raises(ValueError):
         transform_options_for_backend(nvrtc_opts, "invalid")
@@ -546,13 +546,13 @@ def test_transform_options_for_backend_function():
 def test_linker_options_as_bytes():
     """Test LinkerOptions.as_bytes() method."""
     from cuda.core.experimental import LinkerOptions
-    
+
     options = LinkerOptions(arch="sm_80", debug=True)
     byte_options = options.as_bytes()
-    
+
     # Should return a list
     assert isinstance(byte_options, list)
-    
+
     # String options should be encoded to bytes
     # Note: driver backend may have non-string options (bytearrays, ints)
     for opt in byte_options:
