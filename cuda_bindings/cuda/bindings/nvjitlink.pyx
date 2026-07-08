@@ -11,6 +11,8 @@ from cuda.bindings._internal._fast_enum import FastEnum as _cyb_FastEnum
 # <<<< END OF PREAMBLE CONTENT >>>>
 
 
+# cybind-autoregen-bot: prototype smoke-test marker (safe to delete)
+
 cimport cython  # NOQA
 
 from ._internal.utils cimport (get_resource_ptr, get_nested_resource_ptr, nested_resource, nullable_unique_ptr,
